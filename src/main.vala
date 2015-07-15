@@ -34,9 +34,19 @@ public class Main {
 			if (log_debug == true)
 				Environment.set_variable("G_MESSAGES_DEBUG", "all", false);
 
-			if (redirect_target == null || dev_xml == null) {
-				warning("Missing command line arguments, see --help");
-				return 11;
+			if (config_file == null) {
+				warning("need config file, see --help");
+				return -1;
+			}
+
+			var config = new KeyFile();
+
+			try {
+				debug("load from file %s", config_file);
+				config.load_from_file(config_file, KeyFileFlags.NONE);
+			} catch (Error e) {
+				warning("failed to load config: %s", e.message);
+				return -1;
 			}
 
 			var loop = new MainLoop();
