@@ -52,7 +52,11 @@ public class Main {
 			}
 
 			var pipeline_desc = config.get_string("main", "pipeline");
+			var port = config.get_integer("api", "port");
+
 			debug("listen port: %d", port);
+			debug("pipeline: %s", pipeline_desc);
+
 			Gst.init(ref args);
 			var stream = Stream.from_desc(pipeline_desc, null);
 			if (stream == null) {
@@ -60,7 +64,15 @@ public class Main {
 				return -1;
 			}
 
+			var api = new HttpAPI(port);
 			var loop = new MainLoop();
+
+			try {
+				api.listen_all(port, 0);
+			} catch (Error e) {
+				warning("failed to start listening: %s", e.message);
+				return -1;
+			}
 
 			message("loop run()...");
 			loop.run();
