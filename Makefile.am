@@ -3,7 +3,8 @@ configdir = ${sysconfdir}/ros3d-stream
 bin_PROGRAMS = ros3d-stream
 
 ros3d_stream_SOURCES = \
-	src/main.vala
+	src/main.vala \
+	src/stream.vala
 
 ros3d_stream_LDADD = $(ROS3D_STREAM_LIBS)
 ros3d_stream_CFLAGS = $(ROS3D_STREAM_CFLAGS) -Isrc

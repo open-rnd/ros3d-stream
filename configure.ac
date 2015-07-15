@@ -21,13 +21,14 @@ AC_PROG_CC
 AM_PROG_VALAC([0.7.0])
 AC_PROG_INSTALL
 
-AC_SUBST(ROS3D_STREAM_VALAFLAGS, ["--pkg=libsoup-2.4"])
+AC_SUBST(ROS3D_STREAM_VALAFLAGS, ["--pkg=libsoup-2.4 --pkg=gstreamer-1.0"])
 # AC_SUBST(MCONNECT_VALAFLAGS, [--pkg=json-glib-1.0 --pkg=gee-0.8])
 PKG_CHECK_MODULES(ROS3D_STREAM, [glib-2.0
                                gobject-2.0
                                gio-2.0
                                gio-unix-2.0
                                libsoup-2.4
+                               gstreamer-1.0
                                ])
 AC_SUBST(ROS3D_STREAM_CFLAGS)
 AC_SUBST(ROS3D_STREAM_LIBS)

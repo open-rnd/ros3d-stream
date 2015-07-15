@@ -1,3 +1,4 @@
+using Gst;
 
 public class Main {
 
@@ -23,6 +24,7 @@ public class Main {
 				opt_context.set_description("""Ros3D Video Streaming component.""");
 				opt_context.set_help_enabled(true);
 				opt_context.add_main_entries(options, null);
+				opt_context.add_group(Gst.init_get_option_group());
 				opt_context.parse(ref args);
 			} catch (OptionError e) {
 				stdout.printf("error: %s\n", e.message);
@@ -46,6 +48,15 @@ public class Main {
 				config.load_from_file(config_file, KeyFileFlags.NONE);
 			} catch (Error e) {
 				warning("failed to load config: %s", e.message);
+				return -1;
+			}
+
+			var pipeline_desc = config.get_string("main", "pipeline");
+			debug("listen port: %d", port);
+			Gst.init(ref args);
+			var stream = Stream.from_desc(pipeline_desc, null);
+			if (stream == null) {
+				warning("failed to setup stream");
 				return -1;
 			}
 
