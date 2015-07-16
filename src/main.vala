@@ -41,18 +41,18 @@ public class Main {
 				return -1;
 			}
 
-			var config = new KeyFile();
-
 			try {
-				debug("load from file %s", config_file);
-				config.load_from_file(config_file, KeyFileFlags.NONE);
-			} catch (Error e) {
-				warning("failed to load config: %s", e.message);
-				return -1;
+				Config.load(config_file);
+
+				if (log_debug == true)
+					Config.debug_on = true;
+			} catch (ConfigError e) {
+				warning("failed to load configuration from %s: %s",
+						config_file, e.message);
 			}
 
-			var pipeline_desc = config.get_string("main", "pipeline");
-			var port = config.get_integer("api", "port");
+			var pipeline_desc = Config.data.get_string("main", "pipeline");
+			var port = Config.data.get_integer("api", "port");
 
 			debug("listen port: %d", port);
 			debug("pipeline: %s", pipeline_desc);
