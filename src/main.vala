@@ -40,6 +40,7 @@ public class Main {
 			warning("failed to setup stream");
 		}
 
+		debug("stream setup done");
 		return stream;
 	}
 
