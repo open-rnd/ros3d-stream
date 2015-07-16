@@ -55,6 +55,9 @@ class HttpAPI : Soup.Server {
 									GLib.HashTable<string, string>? query,
 									Soup.ClientContext client) {
 
+		if (Config.debug_on == false)
+			return;
+
 		debug("dumping request info -->");
 		debug("  request: %s", msg.method);
 		debug("  URI: %s", msg.uri.to_string(false));
