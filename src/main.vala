@@ -64,9 +64,8 @@ public class Main {
 				return -1;
 			}
 
+			// setup api
 			var api = new HttpAPI(port);
-			var loop = new MainLoop();
-
 			try {
 				api.listen_all(port, 0);
 			} catch (Error e) {
@@ -78,6 +77,10 @@ public class Main {
 			var mgr = new StreamManager(stream);
 			// and hookup the API
 			mgr.add_client_api(api);
+
+			// looop
+			var loop = new MainLoop();
+			// ready to go
 			message("loop run()...");
 			loop.run();
 			message("loop done..");
