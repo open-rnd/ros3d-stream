@@ -16,6 +16,61 @@ public class Main {
 		{null}
 	};
 
+	/**
+	 * setup_stream:
+	 *
+	 * Setup stream source.
+	 * @return stream reference or null
+	 */
+	private static Stream? setup_stream() {
+		string pipeline_desc;
+
+		try {
+			pipeline_desc = Config.data.get_string("main", "pipeline");
+		} catch (KeyFileError err) {
+			warning("failed to obtain pipeline description from configuration: %s",
+					err.message);
+			return null;
+		}
+
+		debug("pipeline: %s", pipeline_desc);
+
+		var stream = Stream.from_desc(pipeline_desc, null);
+		if (stream == null) {
+			warning("failed to setup stream");
+		}
+
+		return stream;
+	}
+
+	/**
+	 * setup_api:
+	 *
+	 * Setup client API, in this case a HTTP API
+	 * @return api or null
+	 */
+	private static HttpAPI? setup_api() {
+		int port = 0;
+		try {
+			port = Config.data.get_integer("api", "port");
+		} catch (KeyFileError err) {
+			warning("failed to obtain listen port from configuration: %s",
+					err.message);
+			return null;
+		}
+
+		debug("listen port: %d", port);
+
+		// setup api
+		var api = new HttpAPI(port);
+		try {
+			api.listen_all(port, 0);
+		} catch (Error e) {
+			warning("failed to start listening: %s", e.message);
+		}
+
+		return api;
+	}
 
 	public static int main(string[] args)
 		{
@@ -51,26 +106,15 @@ public class Main {
 						config_file, e.message);
 			}
 
-			var pipeline_desc = Config.data.get_string("main", "pipeline");
-			var port = Config.data.get_integer("api", "port");
-
-			debug("listen port: %d", port);
-			debug("pipeline: %s", pipeline_desc);
-
 			Gst.init(ref args);
-			var stream = Stream.from_desc(pipeline_desc, null);
-			if (stream == null) {
-				warning("failed to setup stream");
-				return -1;
-			}
 
-			// setup api
-			var api = new HttpAPI(port);
-			try {
-				api.listen_all(port, 0);
-			} catch (Error e) {
-				warning("failed to start listening: %s", e.message);
-				return -1;
+			var stream = setup_stream();
+			var api = setup_api();
+
+			// reality check
+			if (api == null || stream == null) {
+				warning("failed to setup, cannot continue");
+				return 1;
 			}
 
 			// setup manager
