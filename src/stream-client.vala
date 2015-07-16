@@ -3,7 +3,7 @@ class StreamClient {
 	public uint16 port {get; set; default = 0; }
 	public uint id { get; private set;  }
 
-	void StreamClient(string host, uint16 port, uint id) {
+	public StreamClient(string host, uint16 port, uint id) {
 		this.host = host;
 		this.port = port;
 		this.id = id;
