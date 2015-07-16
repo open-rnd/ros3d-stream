@@ -156,7 +156,7 @@ class HttpAPI : Soup.Server {
 
 		debug("got ID: %u", id);
 		if (id > 0) {
-			msg.set_response("text/plain", Soup.MemoryUse.STATIC, "1".data);
+			msg.set_response("text/plain", Soup.MemoryUse.COPY, "%u".printf(id).data);
 			msg.set_status(Soup.Status.OK);
 		} else {
 			msg.set_response("text/plain", Soup.MemoryUse.STATIC,
