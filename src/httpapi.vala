@@ -41,14 +41,26 @@ class HttpAPI : Soup.Server {
 		msg.set_status(Soup.Status.METHOD_NOT_ALLOWED);
 	}
 
-	private static string get_id(GLib.HashTable<string, string>? query) throws HttpAPIError {
+	/**
+	 * get_id:
+	 * @query: HTTP query parameters
+	 * @throws: HttpAPIError if query is incomplete, or client ID was not provided
+	 *
+	 * Extract client ID from query parameters
+	 * @return non-0 client ID
+	 */
+	private static uint get_id(GLib.HashTable<string, string>? query) throws HttpAPIError {
 		if (query == null)
 			throw new HttpAPIError.BAD_REQUEST("No query provided");
 
 		if (query.contains("id") == false)
 			throw new HttpAPIError.BAD_REQUEST("No client ID");
 
-		return query.get("id");
+		var id = (uint) int.parse(query.get("id"));
+		if (id == 0)
+			throw new HttpAPIError.BAD_REQUEST("Incorrect ID format");
+
+		return id;
 	}
 
 	private static void log_request(Soup.Message msg,
@@ -101,9 +113,6 @@ class HttpAPI : Soup.Server {
 		debug("start handler");
 		log_request(msg, query, client);
 
-
-		// TODO limit capacity?
-
 		string address = null;
 		uint16 port = 0;
 
@@ -142,9 +151,18 @@ class HttpAPI : Soup.Server {
 
 		debug("start stream to: %s:%u", address, port);
 
-		// TODO return stream ID
-		msg.set_response("text/plain", Soup.MemoryUse.STATIC, "1".data);
-		msg.set_status(Soup.Status.OK);
+		var self = server as HttpAPI;
+		var id = self.client_start(address, port);
+
+		debug("got ID: %u", id);
+		if (id > 0) {
+			msg.set_response("text/plain", Soup.MemoryUse.STATIC, "1".data);
+			msg.set_status(Soup.Status.OK);
+		} else {
+			msg.set_response("text/plain", Soup.MemoryUse.STATIC,
+							 "The stream could not have been started".data);
+			msg.set_status(Soup.Status.SERVICE_UNAVAILABLE);
+		}
 	}
 
 	private static void stop_handler (Soup.Server server, Soup.Message msg, string path,
@@ -153,8 +171,9 @@ class HttpAPI : Soup.Server {
 		debug("stop handler");
 		log_request(msg, query, client);
 
+		uint id = 0;
 		try {
-			var id = get_id(query);
+			id = get_id(query);
 
 		} catch (HttpAPIError e) {
 			msg.set_response("text/plain", Soup.MemoryUse.COPY,
@@ -164,7 +183,9 @@ class HttpAPI : Soup.Server {
 			return;
 		}
 
-		// TODO verify stream ID
+		var self = server as HttpAPI;
+		self.client_stop(id);
+
 		msg.set_status(Soup.Status.OK);
 	}
 
@@ -174,8 +195,9 @@ class HttpAPI : Soup.Server {
 		debug("alive handler");
 		log_request(msg, query, client);
 
+		uint id = 0;
 		try {
-			var id = get_id(query);
+			id = get_id(query);
 
 		} catch (HttpAPIError e) {
 			msg.set_response("text/plain", Soup.MemoryUse.COPY,
@@ -185,8 +207,36 @@ class HttpAPI : Soup.Server {
 			return;
 		}
 
-		// TODO verify stream ID
+		var self = server as HttpAPI;
+		self.client_stop(id);
+
 		msg.set_status(Soup.Status.OK);
 	}
 
+	/**
+	 * client_start:
+	 * @host: client host
+	 * @port: client port
+	 *
+	 * Start new client stream. The destination is specified by @host
+	 * and @port parameters. The signal handler shall return a client
+	 * ID, that shall be used for all subsequent client
+	 * requests. Client ID equal to 0 indicates that the stream could
+	 * not have been started.
+	 *
+	 * @return: non-0 assigned client ID.
+	 */
+	public signal uint client_start(string host, uint port);
+	/**
+	 * client_stop:
+	 * @id: client ID
+	 */
+	public signal void client_stop(uint id);
+	/**
+	 * client_ping:
+	 * @id: client ID
+	 *
+	 * Client keepalive request
+	 */
+	public signal void client_ping(uint id);
 }
