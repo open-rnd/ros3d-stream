@@ -74,6 +74,10 @@ public class Main {
 				return -1;
 			}
 
+			// setup manager
+			var mgr = new StreamManager(stream);
+			// and hookup the API
+			mgr.add_client_api(api);
 			message("loop run()...");
 			loop.run();
 			message("loop done..");

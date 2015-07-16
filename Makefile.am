@@ -7,7 +7,8 @@ ros3d_stream_SOURCES = \
 	src/stream.vala \
 	src/httpapi.vala \
 	src/config.vala \
-	src/stream-client.vala
+	src/stream-client.vala \
+	src/stream-manager.vala
 
 ros3d_stream_LDADD = $(ROS3D_STREAM_LIBS)
 ros3d_stream_CFLAGS = $(ROS3D_STREAM_CFLAGS) -Isrc
