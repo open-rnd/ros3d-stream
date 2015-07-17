@@ -1,4 +1,10 @@
 class StreamManager {
+
+	/**
+	 * default client keepalive
+	 */
+	public const int DEFAULT_KEEPALIVE = 60;
+
 	/**
 	 * active clients
 	 */
@@ -8,6 +14,12 @@ class StreamManager {
 	 * stream wrapper
 	 */
 	private Stream stream;
+
+	/**
+	 * keepalive interval
+	 */
+	private uint keepalive = DEFAULT_KEEPALIVE;
+	private uint keepalive_on = 0;
 
 	public StreamManager(Stream s) {
 		this.stream = s;
@@ -25,6 +37,10 @@ class StreamManager {
 		api.client_ping.connect((id) => {
 				this.client_ping(id);
 			});
+	}
+
+	public void set_keepalive_time(uint time) {
+		keepalive = time;
 	}
 
 	/**
@@ -77,6 +93,7 @@ class StreamManager {
 
 		stream.client_join(client);
 
+		start_keepalive_check();
 		return id;
 	}
 
@@ -110,5 +127,75 @@ class StreamManager {
 	 */
 	private void client_ping(uint id) {
 		debug("ping from client %u", id);
+
+		var client = clients.get(id);
+
+		if (client != null) {
+			client.refresh();
+		}
 	}
+
+	/**
+	 * start_keepalive_check:
+	 */
+	private void start_keepalive_check() {
+		if (keepalive_on == 0) {
+			debug("starting keepalive check, check every %u seconds",
+				  keepalive);
+			keepalive_on = Timeout.add_seconds(keepalive,
+											   this.on_keepalive_check);
+		}
+	}
+
+	/**
+	 * stop_keeaplive_check:
+	 */
+	private void stop_keeaplive_check() {
+		if (keepalive_on != 0) {
+			Source.remove(keepalive_on);
+			keepalive_on = 0;
+		}
+	}
+
+	/**
+	 * on_keepalive_check:
+	 *
+	 * @return true if keepalive checking should continue
+	 */
+	private bool on_keepalive_check() {
+		check_stale_clients();
+
+		if (clients.size() == 0) {
+			stop_keeaplive_check();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * check_stale_clients:
+	 *
+	 * Check if stale clients exists and remove them
+	 */
+	private void check_stale_clients() {
+		// go through all clients and check their age, if above
+		// keepalive, then stop the stream and remove the client
+		clients.foreach_remove((k, cl) => {
+				var age = cl.age();
+				debug("checking client %s of age: %s",
+					  cl.to_string(), age.to_string());
+
+				if (age > keepalive) {
+					warning("removing stale client: %s", cl.to_string());
+
+					// stop client stream
+					stream.client_leave(cl);
+					return true;
+				}
+
+				return false;
+			});
+	}
+
 }
