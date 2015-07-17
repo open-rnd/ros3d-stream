@@ -74,10 +74,20 @@ public class Main {
 	}
 
 	private static StreamManager? setup_manager(Stream stream, HttpAPI api) {
+		uint keepalive = 0;
+
+		try {
+			keepalive = (uint) Config.data.get_integer("main", "keepalive");
+		} catch (KeyFileError err) {
+			debug("keepalive not set in configuration");
+		}
 		// setup manager
 		var mgr = new StreamManager(stream);
 		// and hookup the API
 		mgr.add_client_api(api);
+
+		if (keepalive != 0)
+			mgr.set_keepalive_time(keepalive);
 
 		return mgr;
 	}
