@@ -1,5 +1,3 @@
-using Gst;
-
 public class Main {
 
 	// Command line options
