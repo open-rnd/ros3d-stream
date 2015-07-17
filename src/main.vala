@@ -6,6 +6,7 @@ public class Main {
 	private static bool log_debug = false;
 	private static string config_file = null;
 	private static string pipeline = null;
+	private static uint keepalive_time = 0;
 
 	private static const GLib.OptionEntry[] options = {
 		{"debug", 'd', 0, OptionArg.NONE, ref log_debug, "Show debug output", null},
@@ -13,6 +14,8 @@ public class Main {
 		 "Path to config file", null},
 		{"stream", 's', 0, OptionArg.STRING, ref pipeline,
 		 "Pipeline", null},
+		{"keepalive", 'k', 0, OptionArg.INT, ref keepalive_time,
+		 "Client keepalive time (seconds)", null},
 		{null}
 	};
 
@@ -122,6 +125,10 @@ public class Main {
 
 				if (log_debug == true)
 					Config.debug_on = true;
+
+				if (keepalive_time != 0)
+					Config.data.set_integer("main", "keepalive", (int) keepalive_time);
+
 			} catch (ConfigError e) {
 				warning("failed to load configuration from %s: %s",
 						config_file, e.message);
