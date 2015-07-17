@@ -73,6 +73,16 @@ public class Main {
 		return api;
 	}
 
+	private static StreamManager? setup_manager(Stream stream, HttpAPI api) {
+		// setup manager
+		var mgr = new StreamManager(stream);
+		// and hookup the API
+		mgr.add_client_api(api);
+
+		return mgr;
+	}
+
+
 	public static int main(string[] args)
 		{
 			try {
@@ -118,10 +128,11 @@ public class Main {
 				return 1;
 			}
 
-			// setup manager
-			var mgr = new StreamManager(stream);
-			// and hookup the API
-			mgr.add_client_api(api);
+			var mgr = setup_manager(stream, api);
+			if (mgr == null) {
+				warning("failed to setup manager, cannot continue");
+				return 1;
+			}
 
 			// looop
 			var loop = new MainLoop();
