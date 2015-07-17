@@ -208,7 +208,7 @@ class HttpAPI : Soup.Server {
 		}
 
 		var self = server as HttpAPI;
-		self.client_stop(id);
+		self.client_ping(id);
 
 		msg.set_status(Soup.Status.OK);
 	}
