@@ -1,4 +1,4 @@
-class StreamManager {
+class StreamManager : Object {
 
 	/**
 	 * default client keepalive

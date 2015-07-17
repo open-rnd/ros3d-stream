@@ -1,4 +1,4 @@
-public class Main {
+public class Main : Object {
 
 	// Command line options
 	private static bool log_debug = false;

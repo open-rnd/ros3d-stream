@@ -1,4 +1,4 @@
-class StreamClient {
+class StreamClient : Object {
 	public string host {get; set; default = null; }
 	public uint16 port {get; set; default = 0; }
 	public uint id { get; private set;  }

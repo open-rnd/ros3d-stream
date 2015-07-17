@@ -1,4 +1,4 @@
-class Stream {
+class Stream : Object {
 
 	private Gst.Element udpsink = null;
 	private Gst.Pipeline pipeline = null;
