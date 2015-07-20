@@ -91,6 +91,9 @@ public class Main : Object {
 		if (keepalive != 0)
 			mgr.set_keepalive_time(keepalive);
 
+		var pub = new AvahiPublisher();
+		mgr.set_service_publisher(pub);
+
 		return mgr;
 	}
 
