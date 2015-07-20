@@ -13,6 +13,30 @@ class HttpAPI : Soup.Server {
 		add_handler("/stop", stop_handler);
 	}
 
+	/**
+	 * get_listen_ports:
+	 *
+	 * Return a list of unique ports the service is available
+	 * on. Note, this method must be called after one of listen_*()
+	 * calls to return meaningful results.
+	 */
+	public SList<uint> get_listen_ports() {
+		SList<uint> listen_ports = null; //new SList<uint>();
+
+
+		get_uris().foreach((uri) => {
+				debug("adding listen port %u from uri: %s",
+					  uri.get_port(), uri.to_string(false));
+
+				var port = uri.get_port();
+
+				// only add unique ports
+				if (listen_ports.index(port) == -1)
+					listen_ports.append(uri.get_port());
+			});
+		return listen_ports.copy();
+	}
+
 	private static void dump_params(GLib.HashTable<string, string>? query) {
 		if (query != null) {
 			debug("query params:");
