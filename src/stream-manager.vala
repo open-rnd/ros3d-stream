@@ -6,6 +6,11 @@ class StreamManager : Object {
 	public const int DEFAULT_KEEPALIVE = 60;
 
 	/**
+	 * published service name
+	 */
+	public const string SERVICE_NAME = "Ros3D Streaming";
+
+	/**
 	 * active clients
 	 */
 	private HashTable<uint, StreamClient> clients;
@@ -13,7 +18,13 @@ class StreamManager : Object {
 	/**
 	 * stream wrapper
 	 */
-	private Stream stream;
+	private Stream stream = null;
+
+	/**
+	 * service publisher
+	 */
+	private Publisher service_publisher = null;
+
 	/**
 	 * client API handle
 	 */
@@ -43,10 +54,42 @@ class StreamManager : Object {
 		api.client_ping.connect((id) => {
 				this.client_ping(id);
 			});
+
+		publish_client_api(api);
+	}
+
+	public void set_service_publisher(Publisher pub) {
+		debug("set publisher");
+
+		service_publisher = pub;
+
+		publish_client_api(client_api);
 	}
 
 	public void set_keepalive_time(uint time) {
 		keepalive = time;
+	}
+
+	/**
+	 * publish_client_api:
+	 * @api: client API
+	 *
+	 * Try publishing client API with service publisher.
+	 */
+	private void publish_client_api(HttpAPI api) {
+
+		if (service_publisher == null)
+			return;
+
+		if (api == null)
+			return;
+
+		var ports = api.get_listen_ports();
+
+		ports.foreach((port) => {
+				service_publisher.publish(SERVICE_NAME, (uint16) port);
+
+			});
 	}
 
 	/**
