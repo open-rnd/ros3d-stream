@@ -31,7 +31,7 @@ public class Main : Object {
 		} catch (KeyFileError err) {
 			warning("failed to obtain pipeline description from configuration: %s",
 					err.message);
-			return null;
+			pipeline_desc = Config.DEFAULT_PIPELINE;
 		}
 
 		debug("pipeline: %s", pipeline_desc);
@@ -58,7 +58,7 @@ public class Main : Object {
 		} catch (KeyFileError err) {
 			warning("failed to obtain listen port from configuration: %s",
 					err.message);
-			return null;
+			port = Config.DEFAULT_API_PORT;
 		}
 
 		debug("listen port: %d", port);
@@ -81,6 +81,7 @@ public class Main : Object {
 			keepalive = (uint) Config.data.get_integer("main", "keepalive");
 		} catch (KeyFileError err) {
 			debug("keepalive not set in configuration");
+			keepalive = Config.DEFAULT_KEEPALIVE;
 		}
 
 		// setup manager
