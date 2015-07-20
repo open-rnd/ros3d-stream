@@ -4,6 +4,10 @@ errordomain ConfigError {
 
 namespace Config {
 
+	const string DEFAULT_PIPELINE = "videotestsrc ! x264enc  ! rtph264pay name=stream";
+	const int    DEFAULT_API_PORT = 9918;
+	const int    DEFAULT_KEEPALIVE = 60;
+
 	public KeyFile data  = null;
 	public bool debug_on = false;
 
