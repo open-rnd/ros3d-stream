@@ -64,7 +64,7 @@ public class Main : Object {
 		debug("listen port: %d", port);
 
 		// setup api
-		var api = new HttpAPI(port);
+		var api = new HttpAPI();
 		try {
 			api.listen_all(port, 0);
 		} catch (Error e) {
@@ -82,6 +82,7 @@ public class Main : Object {
 		} catch (KeyFileError err) {
 			debug("keepalive not set in configuration");
 		}
+
 		// setup manager
 		var mgr = new StreamManager(stream);
 		// and hookup the API

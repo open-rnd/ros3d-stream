@@ -4,7 +4,7 @@ errordomain HttpAPIError {
 
 class HttpAPI : Soup.Server {
 
-	public HttpAPI(int port) {
+	public HttpAPI() {
 
 		add_handler("/version", version_handler);
 		add_handler("/info", info_handler);
