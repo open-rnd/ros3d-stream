@@ -130,9 +130,8 @@ class StreamManager : Object {
 
 		var client = clients.get(id);
 
-		if (client != null) {
+		if (client != null)
 			client.refresh();
-		}
 	}
 
 	/**
