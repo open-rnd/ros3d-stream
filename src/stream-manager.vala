@@ -14,6 +14,10 @@ class StreamManager : Object {
 	 * stream wrapper
 	 */
 	private Stream stream;
+	/**
+	 * client API handle
+	 */
+	private HttpAPI client_api = null;
 
 	/**
 	 * keepalive interval
@@ -27,6 +31,8 @@ class StreamManager : Object {
 	}
 
 	public void add_client_api(HttpAPI api) {
+
+		client_api = api;
 
 		api.client_start.connect((host, port) => {
 				return this.client_start(host, port);
