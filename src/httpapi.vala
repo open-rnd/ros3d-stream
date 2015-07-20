@@ -23,7 +23,7 @@ class HttpAPI : Soup.Server {
 	}
 
 	private static void dump_headers(Soup.MessageHeaders headers) {
-		debug("heaers:");
+		debug("headers:");
 		headers.foreach((n, v) => {
 				debug("  %s: %s", n, v);
 			});
