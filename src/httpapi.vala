@@ -126,6 +126,10 @@ class HttpAPI : Soup.Server {
 		debug("info handler");
 		log_request(msg, query, client);
 
+		if (msg.method != "GET") {
+			not_allowed(msg);
+			return;
+		}
 
 		msg.set_status(Soup.Status.NOT_IMPLEMENTED);
 	}
@@ -135,6 +139,11 @@ class HttpAPI : Soup.Server {
 									   Soup.ClientContext client) {
 		debug("start handler");
 		log_request(msg, query, client);
+
+		if (msg.method != "POST") {
+			not_allowed(msg);
+			return;
+		}
 
 		string address = null;
 		uint16 port = 0;
@@ -194,6 +203,11 @@ class HttpAPI : Soup.Server {
 		debug("stop handler");
 		log_request(msg, query, client);
 
+		if (msg.method != "POST") {
+			not_allowed(msg);
+			return;
+		}
+
 		uint id = 0;
 		try {
 			id = get_id(query);
@@ -217,6 +231,11 @@ class HttpAPI : Soup.Server {
 										Soup.ClientContext client) {
 		debug("alive handler");
 		log_request(msg, query, client);
+
+		if (msg.method != "POST") {
+			not_allowed(msg);
+			return;
+		}
 
 		uint id = 0;
 		try {
