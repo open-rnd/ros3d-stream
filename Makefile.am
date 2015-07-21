@@ -21,3 +21,5 @@ config_DATA = ros3d-stream.conf
 BUILT_SOURCES=$(ros3d_stream_SOURCES:.vala=.c)
 CLEANFILES = $(BUILT_SOURCES)
 
+docs: README.rst
+	rst2html README.rst > README.html
