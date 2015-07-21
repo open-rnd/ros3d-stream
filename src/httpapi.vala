@@ -127,8 +127,7 @@ class HttpAPI : Soup.Server {
 		log_request(msg, query, client);
 
 
-		msg.set_response("text/plain", Soup.MemoryUse.STATIC, "video/x-raw".data);
-		msg.set_status(Soup.Status.OK);
+		msg.set_status(Soup.Status.NOT_IMPLEMENTED);
 	}
 
 	private static void start_handler (Soup.Server server, Soup.Message msg, string path,
