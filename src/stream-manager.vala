@@ -128,7 +128,8 @@ class StreamManager : Object {
 	 * @port:
 	 *
 	 * Start a new client and return assigned ID
-	 * @return non-0 client ID
+	 *
+	 * @return non-0 client ID, 0 indicates an error
 	 */
 	private uint client_start(string host, uint port) {
 		debug("start client %s:%u", host, port);
@@ -136,11 +137,16 @@ class StreamManager : Object {
 		var id = get_next_id();
 		var client = new StreamClient(host, (uint16) port, id);
 
-		clients.insert(id, client);
-
 		debug("starting client: %s", client.to_string());
 
-		stream.client_join(client);
+		if (stream.client_join(client) == false) {
+			warning("failed to start streaming to client %s:%u",
+					host, port);
+			// indicate an error
+			return 0;
+		}
+
+		clients.insert(id, client);
 
 		start_keepalive_check();
 		return id;
