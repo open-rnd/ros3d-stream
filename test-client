@@ -26,7 +26,13 @@ pipeline_pid=$!
 echo "-- pipeline started as ${pipeline_pid}"
 
 echo "-- starting stream, stream host: ${HOST}"
-ID=$(curl -X POST http://${HOST}/start?port=${RCV_PORT})
+ID=$(curl -f -X POST http://${HOST}/start?port=${RCV_PORT})
+if [ $? -ne 0 -o -z "$ID" ]; then
+    echo "-- failed to start stream"
+    kill -9 $pipeline_pid 2>/dev/null
+    exit 1
+fi
+
 echo "-- got ID: $ID"
 
 while true; do
