@@ -69,12 +69,49 @@ class Stream : Object {
 			pipeline.set_state(Gst.State.PLAYING);
 	}
 
+	/**
+	 * get_clients:
+	 *
+	 * Return a single string with comma separated <host>:<port>
+	 * entries.
+	 */
 	private string get_clients() {
 		string clients;
 		this.udpsink.get("clients", out clients);
 
 		debug("clients: %s", clients);
 		return clients;
+	}
+
+	/**
+	 * get_clients_array:
+	 *
+	 * Return an array of <host>:<port> strings
+	 */
+	private string[] get_clients_array() {
+		string clients = get_clients();
+
+		return clients.split(",");
+	}
+
+	/**
+	 * is_client_on:
+	 * @host: host
+	 * @port: port
+	 *
+	 * Check if given client is already connected
+	 *
+	 * @return true if client is not being streamed to
+	 */
+	private bool is_client_on(string host, uint port) {
+		string client_str = "%s:%u".printf(host, port);
+
+		foreach (var cl in get_clients_array()) {
+			if (client_str == cl)
+				return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -102,11 +139,19 @@ class Stream : Object {
 	 *
 	 * Add given @host:@port to stream receivers
 	 */
-	public void client_join_host(string host, uint port) {
+	public bool client_join_host(string host, uint port) {
 		debug("adding client %s:%u", host, port);
+
+		if (is_client_on(host, port) == true) {
+			warning("client %s:%u already on", host, port);
+			return false;
+		}
+
 		Signal.emit_by_name(udpsink, "add", host, port);
 
 		start();
+
+		return true;
 	}
 
 	/**
@@ -123,8 +168,8 @@ class Stream : Object {
 		pause_if_needed();
 	}
 
-	public void client_join(StreamClient client) {
-		client_join_host(client.host, client.port);
+	public bool client_join(StreamClient client) {
+		return client_join_host(client.host, client.port);
 	}
 
 	public void client_leave(StreamClient client) {
