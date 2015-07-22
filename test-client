@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
     echo "Usage:"
     echo "  $(basename $0) <host:port>"
     exit 1
