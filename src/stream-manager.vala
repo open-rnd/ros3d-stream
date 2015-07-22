@@ -165,6 +165,8 @@ class StreamManager : Object {
 
 		debug("stopping client: %s", client.to_string());
 
+		clients.remove(id);
+
 		stream.client_leave(client);
 	}
 
