@@ -94,6 +94,16 @@ Example configuration::
   port = 9918
 
 
+Test client
+-----------
+
+To start a test receiver use the `test-client` script in the source
+directory. Make sure that the streaming service is started and run the
+following command::
+
+  ./test-client <ip>:<port>
+  # assuming default settings and localhost
+  ./test-client localhost:9918
 
 HTTP API
 ========
