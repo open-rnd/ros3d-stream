@@ -5,8 +5,6 @@ Streaming Service
 =================
 
 :Author: Maciej Borzęcki <maciej.borzecki@open-rnd.pl>
-:Date: 21.07.2015
-:Revision: 1
 
 .. contents:: Table of Contents
    :depth: 5
